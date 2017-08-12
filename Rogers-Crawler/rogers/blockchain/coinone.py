@@ -1,8 +1,10 @@
 from datetime import datetime
 
 from config import Source
-from ..model.models import Coinone
+from rogers.model.models import Coinone
 import requests
+
+from utils.slack import send_message
 
 
 class ParserCoinone:
@@ -17,7 +19,7 @@ class ParserCoinone:
             return response
 
         except requests.exceptions.ConnectionError:
-            # TODO: Slack notification
+            send_message("#data-monitoring", "Connection Failed!")
             return "Connection Failed!"
 
     def parse(self, response, currency):

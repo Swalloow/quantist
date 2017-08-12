@@ -1,8 +1,10 @@
 from datetime import datetime
 
 from config import Source
-from ..model.models import Korbit
+from rogers.model.models import Korbit
 import requests
+
+from utils.slack import send_message
 
 
 class ParserKorbit:
@@ -17,7 +19,7 @@ class ParserKorbit:
             return response
 
         except requests.exceptions.ConnectionError:
-            # TODO: Slack notification
+            send_message("#data-monitoring", "Connection Failed!")
             return "Connection Failed!"
 
     def parse(self, response, currency):

@@ -1,6 +1,7 @@
 class Config:
     APP_NAME = 'rogers'
     DATABASE_URI = 'database_uri'
+    SLACK_TOKEN = 'slack_token'
 
 
 class Source:

@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from config import Source
-from ..model.models import Bithumb
+from utils.slack import send_message
+from rogers.model.models import Bithumb
 import requests
 
 
@@ -17,7 +18,7 @@ class ParserBithumb:
             return response
 
         except requests.exceptions.ConnectionError:
-            # TODO: Slack notification
+            send_message("#data-monitoring", "Connection Failed!")
             return "Connection Failed!"
 
     def parse(self, response, currency):
