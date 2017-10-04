@@ -2,6 +2,7 @@ from rogers.blockchain.bithumb import ParserBithumb
 from rogers.blockchain.coinone import ParserCoinone
 from rogers.blockchain.korbit import ParserKorbit
 from rogers.model.database import Database
+from utils.slack import send_message
 
 
 def main():
@@ -20,6 +21,8 @@ def main():
             response = parser.get_response(params)
             model = parser.parse(response, currency)
             db.insert(model)
+
+    send_message("#monitoring", "Save data finished!")
 
 if __name__ == '__main__':
     main()

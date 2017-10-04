@@ -2,5 +2,5 @@ from utils.slack import send_message
 
 
 def test_slack():
-    result = send_message("#data-monitoring", "Test message")
-    assert result is True
+    res = send_message("#monitoring", "Test message")
+    assert res.status_code == 200

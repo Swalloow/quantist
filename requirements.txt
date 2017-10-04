@@ -4,4 +4,3 @@ pytest-pep8==1.0.6
 requests==2.18.3
 SQLAlchemy==1.1.13
 PyMySQL==0.7.11
-slackclient==1.0.7

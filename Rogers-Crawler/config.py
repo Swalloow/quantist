@@ -1,7 +1,10 @@
+import os
+
+
 class Config:
     APP_NAME = 'rogers'
-    DATABASE_URI = 'database_uri'
-    SLACK_TOKEN = 'slack_token'
+    DATABASE_URI = os.getenv("DATABASE_URI")
+    SLACK_URI = os.getenv("SLACK_URI")
 
 
 class Source:

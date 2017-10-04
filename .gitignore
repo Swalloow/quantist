@@ -102,4 +102,4 @@ ENV/
 *.pyc
 *.ipynb
 *.csv
-*/.idea
+.idea

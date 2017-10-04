@@ -18,7 +18,7 @@ class ParserBithumb:
             return response
 
         except requests.exceptions.ConnectionError:
-            send_message("#data-monitoring", "Connection Failed!")
+            send_message("#monitoring", "Connection Failed!")
             return "Connection Failed!"
 
     def parse(self, response, currency):
