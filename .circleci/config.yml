@@ -28,7 +28,7 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: install dependencies
+          name: Install dependencies
           command: |
             virtualenv venv
             source venv/bin/activate
@@ -41,12 +41,13 @@ jobs:
         
       # run tests!
       - run:
-          name: run tests
+          name: Run tests
           command: |
             source venv/bin/activate
             pytest
 
       - deploy:
-          name: deploy to server
+          name: Deploy to server
           command: |
+            source venv/bin/activate
             fab deploy
