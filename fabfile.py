@@ -8,9 +8,9 @@ env.key_filename = '~/.ssh/id_rogers'
 env.warn_only = True
 
 
-# Pull from remote repository
+# Deploy to remote server
 def deploy():
     with cd(HOME):
         run('git pull')
-        run('source /home/ec2-user/venv/bin/activate')
-        run('pip install -r requirements.txt')
+        run('pyenv shell rogers')
+        print("Deploy finished!")
