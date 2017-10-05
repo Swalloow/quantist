@@ -49,5 +49,5 @@ jobs:
       - deploy:
           name: Deploy to server
           command: |
-            . venv/bin/activate
-            fab deploy
+            chmod +x deploy.sh
+            ./deploy.sh
