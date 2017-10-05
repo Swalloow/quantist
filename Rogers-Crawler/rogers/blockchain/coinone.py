@@ -11,6 +11,7 @@ class ParserCoinone:
     def __init__(self):
         self.model = Coinone
         self.url = Source.COINONE_URI
+        self.param = "currency"
         self.currency = ["btc", "eth"]
 
     def get_response(self, params):

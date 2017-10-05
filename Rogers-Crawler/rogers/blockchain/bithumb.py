@@ -10,11 +10,12 @@ class ParserBithumb:
     def __init__(self):
         self.model = Bithumb
         self.url = Source.BITHUMB_URI
+        self.param = "currency"
         self.currency = ["BTC", "ETH"]
 
     def get_response(self, params):
         try:
-            response = requests.get(self.url, params)
+            response = requests.get(self.url + '/' + params[self.param])
             return response
 
         except requests.exceptions.ConnectionError:

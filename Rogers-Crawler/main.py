@@ -17,7 +17,7 @@ def main():
         parser = Parser()
 
         for currency in parser.currency:
-            params = {"currency": currency}
+            params = {parser.param: currency}
             response = parser.get_response(params)
             model = parser.parse(response, currency)
             db.insert(model)

@@ -11,6 +11,7 @@ class ParserKorbit:
     def __init__(self):
         self.model = Korbit
         self.url = Source.KORBIT_URI
+        self.param = "currency_pair"
         self.currency = ["btc_krw", "eth_krw"]
 
     def get_response(self, params):
