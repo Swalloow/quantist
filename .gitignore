@@ -43,5 +43,6 @@ ENV/
 lib/env.py
 
 # Data source
+tensorflowlog/
 *.csv
 *.p
