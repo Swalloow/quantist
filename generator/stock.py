@@ -18,7 +18,8 @@ class StockParser:
         bs = BeautifulSoup(response, "html.parser")
         page = bs.find('td', class_='pgRR')
         last_page = [a['href'] for a in page.find_all('a', href=True) if a.text][0][-3:]
-        return int(last_page) + 1
+        last_page = int(''.join(filter(str.isdigit, last_page)))
+        return last_page + 1
 
     def parse(self, page: int):
         df = pd.read_html(self.url.format(self.code, page), header=0)[0]
