@@ -1,3 +1,3 @@
-# Rogers 
+# Quanter
 
-Financial Data Analysis Platform
+Quantitative Algorithmic Trading Platform

@@ -45,4 +45,5 @@ lib/env.py
 # Data source
 tensorflowlog/
 *.csv
+*.parquet
 *.p
