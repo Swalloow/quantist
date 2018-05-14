@@ -1,13 +1,12 @@
 from multiprocessing import Manager
 from multiprocessing import Pool
-from typing import List
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
 
-class StockParser:
+class StockLoader(object):
     def __init__(self, code: str):
         self.url = "http://finance.naver.com/item/sise_day.nhn?code={}&page={}"
         self.code = code
@@ -36,8 +35,9 @@ class StockParser:
         print(min(df['date']), max(df['date']), sep=', ')
         self.items.append(df)
 
-    def get_items(self) -> List[pd.DataFrame]:
+    def get_items(self) -> pd.DataFrame:
         pool = Pool()
         pages = [i for i in range(1, self.get_last_page())]
         pool.map(self.parse, pages)
-        return self.items
+        df = pd.concat(self.items)
+        return df.dropna().set_index('date').sort_index()
