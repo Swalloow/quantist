@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-class StockLoader:
+class StockLoader(object):
     def __init__(self, code: str):
         self.url = "http://finance.naver.com/item/sise_day.nhn?code={}&page={}"
         self.code = code
