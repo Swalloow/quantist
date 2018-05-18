@@ -42,9 +42,14 @@ class StockLoader(object):
 
     def get_items(self):
         pool = Pool()
-        pages = [i for i in range(1, self.get_last_page())]
+        last_page = self.get_last_page()
+        if last_page > 21:
+            last_page = 21
+
+        pages = [i for i in range(1, last_page)]
         print("total pages: {}".format(len(pages)))
         pool.map(self.parse, pages)
         df = pd.concat(self.items)
-        df = df[df['date'].between('2017-06-01', '2017-07-01', inclusive=True)]
+        df = df[df['date'].between('2017-08-01', '2018-05-18', inclusive=True)]
+
         return df.to_dict(orient='records')
