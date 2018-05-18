@@ -51,4 +51,5 @@ class StockLoader(object):
         pool.map(self.parse, pages)
         df = pd.concat(self.items)
         df = df[df['date'].between('2017-08-01', '2018-05-18', inclusive=True)]
+
         return df.to_dict(orient='records')

@@ -56,6 +56,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     start_time = time.time()
-    # save_code()
     save_all_stock()
     print("--- %s seconds ---" % (time.time() - start_time))
