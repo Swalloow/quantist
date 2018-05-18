@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 
 class StockLoader(object):
+    """Collect the index of each stock"""
     def __init__(self, code: str):
         self.url = "http://finance.naver.com/item/sise_day.nhn?code={}&page={}"
         self.code = code
@@ -31,13 +32,19 @@ class StockLoader(object):
             '저가': 'low',
             '거래량': 'volume'
         })
-        df['date'] = df['date'].apply(lambda d: pd.to_datetime(d, format='%Y-%m-%d'))
-        print(min(df['date']), max(df['date']), sep=', ')
+        df['date'] = df['date'].apply(lambda d: str(pd.to_datetime(d)))
+        df['name'] = self.code
+        df = df.dropna()
+        df[['close', 'diff', 'open', 'high', 'low', 'volume']] \
+            = df[['close', 'diff', 'open', 'high', 'low', 'volume']].astype(int)
+
         self.items.append(df)
 
-    def get_items(self) -> pd.DataFrame:
+    def get_items(self):
         pool = Pool()
         pages = [i for i in range(1, self.get_last_page())]
+        print("total pages: {}".format(len(pages)))
         pool.map(self.parse, pages)
         df = pd.concat(self.items)
-        return df.dropna().set_index('date').sort_index()
+        df = df[df['date'].between('2017-06-01', '2017-07-01', inclusive=True)]
+        return df.to_dict(orient='records')
