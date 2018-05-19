@@ -1,4 +1,5 @@
 from model.alpha import AbstractAlphaModel
+from utils import convert_dt
 
 
 class BuyAndHoldModel(AbstractAlphaModel):
@@ -16,4 +17,6 @@ class BuyAndHoldModel(AbstractAlphaModel):
 if __name__ == '__main__':
     model = BuyAndHoldModel()
     model.init()
-    model.backtest("2017-01-01", "2018-01-01")
+    start_date = convert_dt(2017, 10, 1)
+    end_date = convert_dt(2018, 2, 1)
+    model.backtest(start_date, end_date)
