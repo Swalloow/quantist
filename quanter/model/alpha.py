@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
+
 from portfolio.builder import Portfolio
 from provider.handler import DynamoDBHandler
-from utils import buy_price, sell_price
 
 
 class AbstractAlphaModel(ABC):
@@ -18,15 +18,17 @@ class AbstractAlphaModel(ABC):
         raise NotImplementedError('Not implemented')
 
     def backtest(self, start_date, end_date):
-        print(start_date, end_date, self.portfolio.cash, sep=', ')
+        print(self.portfolio)
         db = DynamoDBHandler('stock')
 
         total = []
         for stock, ratio in self.portfolio.ratio.items():
             seed = self.portfolio.cash * ratio
-            res = db.get_price_by_date(stock, start_date, end_date)
-            cnt, buy = buy_price(seed, int(res[0]['close']))
-            sell = sell_price(cnt, int(res[-1]['close']))
-            print(stock, ratio, buy, sell, sell - buy, sep=', ')
-            total.append(sell - buy)
-        print(sum(total))
+            items = db.get_price_by_date(stock, start_date, end_date)
+            buy = int(items[0]['close'])
+            sell = int(items[-1]['close'])
+            profit = self.portfolio.calculate_profit(seed, buy, sell)
+            total.append(profit)
+            self.portfolio.plot_profit_change(buy, items)
+
+        print("profit: {}".format(sum(total)))
