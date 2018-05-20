@@ -5,13 +5,13 @@ from utils import convert_dt
 class SeasonalModel(AbstractModel):
     def initialize(self):
         self.stock = ['044340', '017670']
-        self.ratio = [0.5, 0.5]
+        self.ratio = [1.0, 1.0]
         self.indicators = {}
         self.portfolio.update(self.stock, self.ratio)
 
     # Implement your logic here
     def handle_data(self):
-        return
+        raise NotImplementedError('TODO')
 
 
 if __name__ == '__main__':

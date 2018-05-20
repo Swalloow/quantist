@@ -4,6 +4,7 @@ lxml==4.2.1
 requests==2.18.3
 numpy==1.14.3
 pandas==0.22.0
+tqdm==4.23.3
 pyarrow
 matplotlib==2.0.0
 seaborn==0.8.1

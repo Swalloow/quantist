@@ -1,4 +1,5 @@
 from math import trunc
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -45,8 +46,10 @@ class Portfolio(object):
     @staticmethod
     def plot_profit_change(df: pd.DataFrame):
         stock = df.columns.tolist()
+        date = [datetime.strptime(i, "%Y-%m-%d %H:%M:%S") for i in df.index.tolist()]
         for each in stock:
             plt.title("profit change")
-            plt.plot(df[each].tolist())
+            plt.plot(date, df[each].tolist())
+            plt.gcf().autofmt_xdate()
         plt.legend(stock, loc='upper left')
         plt.show()

@@ -3,6 +3,7 @@ from typing import List
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 
 class StockLoader(object):
@@ -47,10 +48,7 @@ class StockLoader(object):
         if last_page > 100:
             last_page = 100
 
-        pages = [i for i in range(1, last_page)]
-        print("total pages: {}".format(len(pages)))
-
-        for i in pages:
+        for i in tqdm(range(1, last_page)):
             self.parse(i)
 
         df = pd.concat(self.items)

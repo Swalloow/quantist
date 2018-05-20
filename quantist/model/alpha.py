@@ -59,8 +59,7 @@ class AbstractModel(ABC):
         total_profit_rate = round((total_profit / self.portfolio.cash) * 100, 2)
 
         print("-----------------------------------------------")
-        print("total profit: {}".format(total_profit))
-        print("total profit rate: {}".format(total_profit_rate))
+        print("total profit: {} / {}%".format(total_profit, total_profit_rate))
         print("portfolio mean: {}".format(mean))
         print("portfolio variance: {}".format(var))
         print(report)
