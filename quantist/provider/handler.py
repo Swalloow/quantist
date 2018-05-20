@@ -42,3 +42,6 @@ class DynamoDBHandler(object):
             ProjectionExpression="#nm, #dt, #clo",
             ExpressionAttributeNames={"#nm": "name", "#dt": "date", "#clo": "close"})
         return response['Items']
+
+    def get_kospi_200(self, start_date: str, end_date: str) -> List[dict]:
+        raise NotImplementedError('TODO')

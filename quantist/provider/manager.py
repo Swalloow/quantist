@@ -47,7 +47,7 @@ def save_all_stock():
 
 def find_code(corp: str) -> str:
     df = pd.read_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
-    return df[df.corp == corp].code.values[0]
+    return df[df.corp == corp].code
 
 
 def load_items(code: str) -> pd.DataFrame:
