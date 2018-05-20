@@ -1,5 +1,4 @@
 from math import trunc
-from typing import List
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -43,9 +42,11 @@ class Portfolio(object):
     def profit_ratio(buy: int, sell: int):
         return round((sell - buy) / sell * 100, 2)
 
-    def plot_profit_change(self, items: List[dict], buy: int):
-        df = pd.DataFrame(items, columns=['name', 'date', 'close', 'diff'])
-        rate = df.close.apply(lambda x: self.profit_ratio(buy, x)).tolist()
-        plt.title("{} profit change".format(df.name[0]))
-        plt.plot(rate)
+    @staticmethod
+    def plot_profit_change(df: pd.DataFrame):
+        stock = df.columns.tolist()
+        for each in stock:
+            plt.title("profit change")
+            plt.plot(df[each].tolist())
+        plt.legend(stock, loc='upper left')
         plt.show()

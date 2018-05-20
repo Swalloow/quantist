@@ -1,3 +1,5 @@
+from typing import List
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -40,10 +42,10 @@ class StockLoader(object):
 
         self.items.append(df)
 
-    def get_items(self):
+    def get_items(self, start_date, end_date) -> List[dict]:
         last_page = self.get_last_page()
-        if last_page > 21:
-            last_page = 21
+        if last_page > 100:
+            last_page = 100
 
         pages = [i for i in range(1, last_page)]
         print("total pages: {}".format(len(pages)))
@@ -52,6 +54,7 @@ class StockLoader(object):
             self.parse(i)
 
         df = pd.concat(self.items)
-        df = df[df['date'].between('2017-08-01', '2018-05-18', inclusive=True)]
+        df = df[df['date'].between(start_date, end_date, inclusive=True)]
+        df = df.sort_values('date')
         self.items = []
         return df.to_dict(orient='records')

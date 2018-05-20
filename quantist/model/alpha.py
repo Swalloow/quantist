@@ -5,6 +5,7 @@ import pandas as pd
 
 from portfolio.builder import Portfolio
 from provider.handler import DynamoDBHandler
+from provider.manager import get_price_by_entire
 
 
 class AbstractModel(ABC):
@@ -22,14 +23,15 @@ class AbstractModel(ABC):
     def handle_data(self):
         raise NotImplementedError('Not implemented')
 
-    def backtest(self, start_date: str, end_date: str):
+    def backtest(self, start_date: str, end_date: str, entire: bool=False):
         self.initialize()
         db = DynamoDBHandler('stock')
 
         records = []
         daily_port = []
         for stock, ratio in self.portfolio.ratio.items():
-            items = db.get_price_by_date(stock, start_date, end_date)
+            items = db.get_price_by_date(stock, start_date, end_date) if entire is False \
+                else get_price_by_entire(stock, start_date, end_date)
             seed = int(self.portfolio.cash * ratio)
             buy = int(items[0]['close'])
             sell = int(items[-1]['close'])
@@ -45,19 +47,21 @@ class AbstractModel(ABC):
             result = df.close.apply(lambda x: self.portfolio.profit_ratio(buy, x))
             daily_port.append(result)
 
-        # Portfolio mean-varience
+        # Portfolio mean-variance
         df = pd.concat(daily_port, axis=1, keys=self.portfolio.ratio.keys())
-        avg_ret = df.mean()
-        var_covar = df.corr()
         w = np.array(list(self.portfolio.ratio.values())).T
-        mean, var = self.portfolio.calculate_mean_var(avg_ret, var_covar, w)
+        mean, var = self.portfolio.calculate_mean_var(df.mean(), df.corr(), w)
 
         # Make report DF
         col = ['stock', 'ratio', 'seed', 'profit', 'holding', 'profit_rate']
         report = pd.DataFrame.from_records(records, columns=col)
-
         total_profit = sum(report.profit.tolist())
+        total_profit_rate = round((total_profit / self.portfolio.cash) * 100, 2)
+
+        print("-----------------------------------------------")
         print("total profit: {}".format(total_profit))
+        print("total profit rate: {}".format(total_profit_rate))
         print("portfolio mean: {}".format(mean))
-        print("portfolio varience: {}".format(var))
+        print("portfolio variance: {}".format(var))
         print(report)
+        self.portfolio.plot_profit_change(df)
