@@ -1,4 +1,5 @@
 import argparse
+import boto3
 import os
 
 import pandas as pd
@@ -20,22 +21,28 @@ def save_code():
     df.to_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
 
 
-def save_single_stock(code: str):
-    loader = StockLoader(code)
-    items = loader.get_items()
-    print("first items : {}".format(items[0]))
-    print("length : {}".format(len(items)))
-
-
 def save_all_stock():
     if not os.path.exists("{}/code.parquet".format(PATH)):
         save_code()
 
     df = pd.read_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
-    for each in df.code.tolist():
+    df = df[df.market == 'kospi']
+    codes = df.code.tolist()
+    loader = StockLoader('')
+    for each in codes:
         print("-------------------------")
         print("{} start!!".format(each))
-        save_single_stock(each)
+        loader.code = each
+        items = loader.get_items()
+        print("first items : {}".format(items[0]))
+        print("length : {}".format(len(items)))
+
+        dynamodb = boto3.resource('dynamodb', 'ap-northeast-2')
+        table = dynamodb.Table('stock')
+        with table.batch_writer() as batch:
+            for item in items:
+                batch.put_item(Item=item)
+        print("save finished!")
 
 
 def find_code(corp: str) -> str:
@@ -56,5 +63,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     start_time = time.time()
+    # save_code()
     save_all_stock()
     print("--- %s seconds ---" % (time.time() - start_time))

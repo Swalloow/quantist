@@ -1,6 +1,3 @@
-from multiprocessing import Manager
-from multiprocessing import Pool
-
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -11,14 +8,17 @@ class StockLoader(object):
     def __init__(self, code: str):
         self.url = "http://finance.naver.com/item/sise_day.nhn?code={}&page={}"
         self.code = code
-        self.items = Manager().list()
+        self.items = []
 
     def get_last_page(self) -> int:
         response = requests.get(self.url.format(self.code, 1)).text
         bs = BeautifulSoup(response, "html.parser")
-        page = bs.find('td', class_='pgRR')
-        last_page = [a['href'] for a in page.find_all('a', href=True) if a.text][0][-3:]
-        last_page = int(''.join(filter(str.isdigit, last_page)))
+        try:
+            page = bs.find('td', class_='pgRR')
+            last_page = [a['href'] for a in page.find_all('a', href=True) if a.text][0][-3:]
+            last_page = int(''.join(filter(str.isdigit, last_page)))
+        except AttributeError:
+            return 2
         return last_page + 1
 
     def parse(self, page: int):
@@ -41,15 +41,17 @@ class StockLoader(object):
         self.items.append(df)
 
     def get_items(self):
-        pool = Pool()
         last_page = self.get_last_page()
         if last_page > 21:
             last_page = 21
 
         pages = [i for i in range(1, last_page)]
         print("total pages: {}".format(len(pages)))
-        pool.map(self.parse, pages)
+
+        for i in pages:
+            self.parse(i)
+
         df = pd.concat(self.items)
         df = df[df['date'].between('2017-08-01', '2018-05-18', inclusive=True)]
-
+        self.items = []
         return df.to_dict(orient='records')
