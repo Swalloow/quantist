@@ -48,7 +48,10 @@ def save_all_stock():
 
 def find_code(corp: str) -> str:
     df = pd.read_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
-    return df[df.corp == corp].code
+    result = df[df.corp == corp].code.tolist()
+    if len(result) == 0:
+        raise ValueError('invaild corp')
+    return result[0]
 
 
 def get_price_by_entire(code: str, start_date: str, end_date: str) -> List[dict]:
