@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
 import pandas as pd
 
 from portfolio.builder import Portfolio
@@ -47,20 +46,6 @@ class AbstractModel(ABC):
             result = df.close.apply(lambda x: self.portfolio.profit_ratio(buy, x))
             daily_port.append(result)
 
-        # Portfolio mean-variance
+        # Portfolio report
         df = pd.concat(daily_port, axis=1, keys=self.portfolio.ratio.keys())
-        w = np.array(list(self.portfolio.ratio.values())).T
-        mean, var = self.portfolio.calculate_mean_var(df.mean(), df.corr(), w)
-
-        # Make report DF
-        col = ['stock', 'ratio', 'seed', 'profit', 'holding', 'profit_rate']
-        report = pd.DataFrame.from_records(records, columns=col)
-        total_profit = sum(report.profit.tolist())
-        total_profit_rate = round((total_profit / self.portfolio.cash) * 100, 2)
-
-        print("-----------------------------------------------")
-        print("total profit: {} / {}%".format(total_profit, total_profit_rate))
-        print("portfolio mean: {}".format(mean))
-        print("portfolio variance: {}".format(var))
-        print(report)
-        self.portfolio.plot_profit_change(df)
+        self.portfolio.report(df, records)
