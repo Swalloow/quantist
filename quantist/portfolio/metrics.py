@@ -19,5 +19,10 @@ def sharpe_ratio():
     raise NotImplementedError('TODO')
 
 
+def winning_ratio(profit: List[int]) -> float:
+    win = [each for each in profit if each > 0]
+    return round(len(win) / len(profit), 2) * 100
+
+
 def mdd():
     raise NotImplementedError('TODO')

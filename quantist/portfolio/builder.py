@@ -6,7 +6,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from metrics import daily_mean, variance
+from metrics import (
+    daily_mean,
+    variance,
+    winning_ratio
+)
 
 sns.set_style('darkgrid')
 
@@ -51,11 +55,13 @@ class Portfolio(object):
         report = pd.DataFrame.from_records(records, columns=col)
         total_profit = sum(report.profit.tolist())
         total_profit_rate = round((total_profit / self.cash) * 100, 2)
+        winning = winning_ratio(report.profit.tolist())
 
         print("-----------------------------------------------")
         print("total profit: {} / {}%".format(total_profit, total_profit_rate))
         print("portfolio mean: {}".format(mean))
         print("portfolio variance: {}".format(var))
+        print("portfolio winning ratio: {}%".format(winning))
         print("-----------------------------------------------")
         print(report)
         self.plot_profit_change(df)
