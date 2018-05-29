@@ -1,51 +1,29 @@
 from abc import ABC, abstractmethod
 
-import pandas as pd
-
+from backtest import BacktestRunner
 from portfolio.builder import Portfolio
-from provider.handler import DynamoDBHandler
-from provider.manager import get_price_by_entire
 
 
 class AbstractModel(ABC):
-    def __init__(self, cash: int=10000000):
+    def __init__(self, cash: int = 10000000):
         self.stock = []
         self.ratio = []
         self.indicators = {}
         self.portfolio = Portfolio(cash)
+        self.environment = BacktestRunner(self)
 
     @abstractmethod
     def initialize(self):
+        """Initialize portfolio"""
         raise NotImplementedError('Not implemented')
 
     @abstractmethod
-    def handle_data(self):
+    def handle_data(self, data):
+        """
+        Handling time series data for order price
+        """
         raise NotImplementedError('Not implemented')
 
-    def backtest(self, start_date: str, end_date: str, entire: bool=False):
+    def run(self, start_date: str, end_date: str, entire: bool=False):
         self.initialize()
-        db = DynamoDBHandler('stock')
-
-        records = []
-        daily_port = []
-        for stock, ratio in self.portfolio.ratio.items():
-            items = db.get_price_by_date(stock, start_date, end_date) if entire is False \
-                else get_price_by_entire(stock, start_date, end_date)
-            seed = int(self.portfolio.cash * ratio)
-            buy = int(items[0]['close'])
-            sell = int(items[-1]['close'])
-            profit = self.portfolio.calculate_profit(seed, buy, sell)
-            holding = seed - self.portfolio.buy_price(seed, buy)[1]
-            profit_rate = round((profit / seed) * 100, 2)
-            records.append((stock, ratio, seed, profit, holding, profit_rate))
-
-            # Make daily profit change DF
-            df = pd.DataFrame(items, columns=['name', 'date', 'close', 'diff'])
-            df['close'] = df.close.astype(int)
-            df = df.set_index('date').sort_index()
-            result = df.close.apply(lambda x: self.portfolio.profit_ratio(buy, x))
-            daily_port.append(result)
-
-        # Portfolio report
-        df = pd.concat(daily_port, axis=1, keys=self.portfolio.ratio.keys())
-        self.portfolio.report(df, records)
+        self.environment.backtest(start_date, end_date, entire)
