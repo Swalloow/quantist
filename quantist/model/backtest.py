@@ -11,6 +11,7 @@ class BacktestRunner(object):
     def __init__(self, model):
         self.model = model
         self.portfolio = model.portfolio
+        self.positions = dict(buy=[], sell=[])
         self.start = convert_dt(2017, 9, 1)
         self.end = convert_dt(2018, 5, 10)
         self.slippage = 0
@@ -30,28 +31,35 @@ class BacktestRunner(object):
         db = DynamoDBHandler('index')
         return db.get_baseline(baseline, self.start, self.end)
 
+    def order_price(self, price, way: str):
+        self.positions[way.lower()].append(price)
+
     def backtest(self, start_date: str, end_date: str, baseline: str, entire: bool):
         self.initialize(start_date, end_date, entire)
         records = []
         daily_port = []
         for stock, ratio in self.portfolio.ratio.items():
+            self.positions = dict(buy=[], sell=[])
             items = self.load_data(stock)
 
             # Create DataFrame
             df = pd.DataFrame(items, columns=['name', 'date', 'close', 'diff'])
             df['close'] = df.close.astype(int)
             df = df.set_index('date').sort_index()
+            first_price = int(df['close'][0])
 
-            # TODO: Apply seasonal strategy
-            buy, sell = self.model.handle_data(df)
+            self.model.handle_data(df)
             seed = int(self.portfolio.cash * ratio)
-            profit = self.portfolio.calculate_profit(seed, buy, sell)
-            holding = seed - self.portfolio.buy_price(seed, buy)[1]
-            profit_rate = round((profit / seed) * 100, 2)
-            records.append((stock, ratio, seed, profit, holding, profit_rate))
+            for buy, sell in zip(self.positions['buy'], self.positions['sell']):
+                profit = self.portfolio.calculate_profit(seed, buy, sell)
+                holding = seed - self.portfolio.buy_price(seed, buy)[1]
+                profit_rate = round((profit / seed) * 100, 2)
+                records.append((stock, ratio, seed, profit, holding, profit_rate))
+                seed += profit
 
             # Make daily profit change DF
-            result = df.close.apply(lambda x: self.portfolio.profit_ratio(buy, x))
+            result = df.close.apply(
+                lambda x: self.portfolio.profit_ratio(first_price, x))
             daily_port.append(result)
 
         # Portfolio report

@@ -10,7 +10,7 @@ class AbstractModel(ABC):
         self.ratio = []
         self.indicators = {}  # TODO: Add indicator
         self.portfolio = Portfolio(cash)
-        self.environment = BacktestRunner(self)
+        self.runner = BacktestRunner(self)
 
     @abstractmethod
     def initialize(self):
@@ -26,4 +26,4 @@ class AbstractModel(ABC):
             entire: bool = False):
         """Run backtest environment with initialize"""
         self.initialize()
-        self.environment.backtest(start_date, end_date, baseline, entire)
+        self.runner.backtest(start_date, end_date, baseline, entire)
