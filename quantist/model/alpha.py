@@ -8,7 +8,7 @@ class AbstractModel(ABC):
     def __init__(self, cash: int = 10000000):
         self.stock = []
         self.ratio = []
-        self.indicators = {}
+        self.indicators = {}  # TODO: Add indicator
         self.portfolio = Portfolio(cash)
         self.environment = BacktestRunner(self)
 
@@ -19,11 +19,11 @@ class AbstractModel(ABC):
 
     @abstractmethod
     def handle_data(self, data):
-        """
-        Handling time series data for order price
-        """
+        """Handling time series data for order price"""
         raise NotImplementedError('Not implemented')
 
-    def run(self, start_date: str, end_date: str, entire: bool=False):
+    def run(self, start_date: str, end_date: str, baseline: str = 'KOSPI',
+            entire: bool = False):
+        """Run backtest environment with initialize"""
         self.initialize()
-        self.environment.backtest(start_date, end_date, entire)
+        self.environment.backtest(start_date, end_date, baseline, entire)

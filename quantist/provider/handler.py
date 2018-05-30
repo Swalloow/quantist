@@ -43,5 +43,13 @@ class DynamoDBHandler(object):
             ExpressionAttributeNames={"#nm": "name", "#dt": "date", "#clo": "close"})
         return response['Items']
 
-    def get_kospi_200(self, start_date: str, end_date: str) -> List[dict]:
-        raise NotImplementedError('TODO')
+    def get_baseline(self, name: str, start_date: str, end_date: str) -> List[dict]:
+        """
+        Get baseline index by key string
+        """
+        key_exp = Key('name').eq(name) & Key('date').between(start_date, end_date)
+        response = self.table.query(
+            KeyConditionExpression=key_exp,
+            ProjectionExpression='#nm, #dt, #pr',
+            ExpressionAttributeNames={"#nm": "name", "#dt": "date", "#pr": "price"})
+        return response['Items']
