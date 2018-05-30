@@ -12,11 +12,9 @@ from metrics import (
     winning_ratio
 )
 
-sns.set_style('darkgrid')
-
 
 class Portfolio(object):
-    def __init__(self, cash: int, ratio: dict=None):
+    def __init__(self, cash: int, ratio: dict = None):
         self.cash = cash
         self.stock = []
         self.weight = []
@@ -47,7 +45,7 @@ class Portfolio(object):
     def profit_ratio(buy: int, sell: int) -> float:
         return round((sell - buy) / sell * 100, 2)
 
-    def report(self, df: pd.DataFrame, records: List[set]):
+    def report(self, df: pd.DataFrame, bs: pd.DataFrame, records: List[set]):
         mean = daily_mean(df, self.weight)
         var = variance(df, self.weight, corr=True)
 
@@ -64,15 +62,28 @@ class Portfolio(object):
         print("portfolio winning ratio: {}%".format(winning))
         print("-----------------------------------------------")
         print(report)
-        self.plot_profit_change(df)
+        self.plot_single_profit_change(df)
+        self.plot_portfolio_profit_change(df, bs)
+        self.plot_portfolio_corr(df)
 
     @staticmethod
-    def plot_profit_change(df: pd.DataFrame):
+    def plot_single_profit_change(df: pd.DataFrame):
         stock = df.columns.tolist()
         date = [datetime.strptime(i, "%Y-%m-%d %H:%M:%S") for i in df.index.tolist()]
+        sns.set_style('darkgrid')
         for each in stock:
             plt.title("profit change")
             plt.plot(date, df[each].tolist())
             plt.gcf().autofmt_xdate()
         plt.legend(stock, loc='upper left')
+        plt.show()
+
+    @staticmethod
+    def plot_portfolio_profit_change(df: pd.DataFrame, bs: pd.DataFrame):
+        pass
+
+    @staticmethod
+    def plot_portfolio_corr(df: pd.DataFrame):
+        plt.title("portfolio correlation")
+        sns.heatmap(df.corr(), cmap='coolwarm', annot=True, center=0)
         plt.show()
