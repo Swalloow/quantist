@@ -1,13 +1,13 @@
 from model.alpha import AbstractModel
-from utils import convert_dt
 from model.risk import MarkowitzModel
+from utils import convert_dt
 
 
 class BuyAndHoldOptModel(AbstractModel):
     def initialize(self):
         # NAVER, KAKAO, CELLTRION, SKINNO
         self.stock = ['035420', '035720', '068270', '096770']
-        self.ratio = MarkowitzModel(self.stock).optimize()
+        self.ratio = MarkowitzModel(self.stock).optimize(opt='min')
         self.indicators = {}
         self.portfolio.update(self.stock, self.ratio)
 
