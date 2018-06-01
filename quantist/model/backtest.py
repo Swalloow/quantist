@@ -50,12 +50,15 @@ class BacktestRunner(object):
 
             self.model.handle_data(df)
             seed = int(self.portfolio.cash * ratio)
-            for buy, sell in zip(self.positions['buy'], self.positions['sell']):
-                profit = self.portfolio.calculate_profit(seed, buy, sell)
-                holding = seed - self.portfolio.buy_price(seed, buy)[1]
-                profit_rate = round((profit / seed) * 100, 2)
-                records.append((stock, ratio, seed, profit, holding, profit_rate))
-                seed += profit
+            if seed == 0:
+                records.append((stock, ratio, 0, 0, 0, 0))
+            else:
+                for buy, sell in zip(self.positions['buy'], self.positions['sell']):
+                    profit = self.portfolio.calculate_profit(seed, buy, sell)
+                    holding = seed - self.portfolio.buy_price(seed, buy)[1]
+                    profit_rate = round((profit / seed) * 100, 2)
+                    records.append((stock, ratio, seed, profit, holding, profit_rate))
+                    seed += profit
 
             # Make daily profit change DF
             result = df.close.apply(

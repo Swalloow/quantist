@@ -28,7 +28,7 @@ class MarkowitzModel(object):
         df = pd.concat(dfs, axis=1)
         return df
 
-    def optimize(self, opt='max'):
+    def optimize(self, opt='min'):
         def statistics(weights):
             weights = np.array(weights)
             pret = np.sum(rets.mean() * weights) * 252
@@ -60,8 +60,9 @@ class MarkowitzModel(object):
 
         cons = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
         bnds = tuple((0, 1) for _ in range(noa))
+        init = np.array(noa * [1. / noa, ])
         opts = sco.minimize(min_func_sharpe if opt == 'max' else min_func_variance,
-                            noa * [1. / noa, ], method='SLSQP',
+                            init, method='SLSQP',
                             bounds=bnds, constraints=cons)
         plt.scatter(pvols, prets, c=prets / pvols, marker='o')
         plt.grid(True)
@@ -70,9 +71,12 @@ class MarkowitzModel(object):
         plt.colorbar(label='Sharpe ratio')
 
         pt_opts = statistics(opts['x']).round(3)
+        opt_weights = [round(i, 3) for i in opts['x']]
+        print("-----------------------------------------------")
+        print("optimize weights: {}".format(opt_weights))
         plt.scatter(pt_opts[1], pt_opts[0], marker="v", s=100, alpha=0.3, color='red')
         plt.show()
-        return list(pt_opts)
+        return opt_weights
 
     def plot_sharpe_ratio(self):
         raise NotImplementedError('TODO')

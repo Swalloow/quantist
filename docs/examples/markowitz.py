@@ -7,7 +7,7 @@ class BuyAndHoldOptModel(AbstractModel):
     def initialize(self):
         # NAVER, KAKAO, CELLTRION, SKINNO
         self.stock = ['035420', '035720', '068270', '096770']
-        self.ratio = MarkowitzModel(self.stock).optimize(opt='min')
+        self.ratio = MarkowitzModel(self.stock).optimize(opt='max')
         self.indicators = {}
         self.portfolio.update(self.stock, self.ratio)
 
