@@ -10,3 +10,4 @@ pyarrow
 matplotlib==2.0.0
 seaborn==0.8.1
 tensorflow==1.7.0
+Flask==1.0.2
