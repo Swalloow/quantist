@@ -53,3 +53,8 @@ class DynamoDBHandler(object):
             ProjectionExpression='#nm, #dt, #pr',
             ExpressionAttributeNames={"#nm": "name", "#dt": "date", "#pr": "price"})
         return response['Items']
+
+    def get_stock_master(self):
+        self.table = 'master'
+        response = self.table.scan()
+        return response['Items']
