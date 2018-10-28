@@ -77,6 +77,3 @@ class MarkowitzModel(object):
         plt.scatter(pt_opts[1], pt_opts[0], marker="v", s=100, alpha=0.3, color='red')
         plt.show()
         return opt_weights
-
-    def plot_sharpe_ratio(self):
-        raise NotImplementedError('TODO')

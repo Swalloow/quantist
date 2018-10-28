@@ -47,3 +47,4 @@ tensorflowlog/
 *.csv
 *.parquet
 *.p
+dump.rdb

@@ -28,22 +28,24 @@ def save_all_stock():
 
     df = pd.read_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
     df = df[df.market == 'kospi']
-    codes = df.code.tolist()
+    codes = df.code.tolist()[:10]
     loader = StockLoader('')
     for each in codes:
         print("-------------------------")
         print("{} start!!".format(each))
         loader.code = each
-        items = loader.get_items('2017-08-01', '2018-05-18')
-        print("first items : {}".format(items[0]))
-        print("length : {}".format(len(items)))
-
-        dynamodb = boto3.resource('dynamodb', 'ap-northeast-2')
-        table = dynamodb.Table('stock')
-        with table.batch_writer() as batch:
-            for item in items:
-                batch.put_item(Item=item)
-        print("save finished!")
+        try:
+            items = loader.get_items('2018-10-15', '2018-08-10')
+            # dynamodb = boto3.resource('dynamodb', 'ap-northeast-2')
+            # table = dynamodb.Table('stock')
+            # with table.batch_writer() as batch:
+            #     for item in items:
+            #         batch.put_item(Item=item)
+            items.to_parquet("{}/{}.parquet".format(PATH, each), engine='pyarrow')
+            print("save finished!")
+        except Exception:
+            print("exception {}".format(each))
+            pass
 
 
 def find_code(corp: str) -> str:
@@ -56,7 +58,7 @@ def find_code(corp: str) -> str:
 
 def get_price_by_entire(code: str, start_date: str, end_date: str) -> List[dict]:
     loader = StockLoader(code)
-    return loader.get_items(start_date, end_date)
+    # return loader.get_items(start_date, end_date)
 
 
 def get_kospi200_code() -> List[str]:
@@ -70,12 +72,12 @@ def load_items(code: str) -> pd.DataFrame:
 if __name__ == '__main__':
     import time
 
-    parser = argparse.ArgumentParser()
-    # parser.add_argument('command', choices=sorted(manager.commands))
-    parser.add_argument('--code')
-    args = parser.parse_args()
-
     start_time = time.time()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('command', choices=sorted(manager.commands))
+    # parser.add_argument('--code')
+    # args = parser.parse_args()
     # save_code()
     save_all_stock()
+
     print("--- %s seconds ---" % (time.time() - start_time))
