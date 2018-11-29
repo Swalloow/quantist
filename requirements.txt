@@ -2,7 +2,7 @@ scipy
 boto3>=1.6.6
 beautifulsoup4==4.6.0
 lxml==4.2.1
-requests==2.18.3
+requests==2.20.1
 numpy==1.14.3
 pandas==0.22.0
 tqdm==4.23.3
