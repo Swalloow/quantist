@@ -31,8 +31,8 @@ async def fetch_url(code, url):
 
 
 if __name__ == '__main__':
-    code_df = pd.read_parquet("{}/code.parquet".format(PATH), engine='pyarrow')
-    code_df = code_df[code_df.market == 'kosdaq'][500:]
+    code_df = pd.read_parquet(f"{PATH}/code.parquet", engine='pyarrow')
+    code_df = code_df[code_df.market == 'kosdaq']
     codes = code_df.code.tolist()
     urls = [(each, URI.format(each, 1)) for each in codes]
 
